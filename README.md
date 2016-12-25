@@ -14,14 +14,14 @@ Support for iOS will follow in a couple of days.
 
 ## Installation
 
-Run `tns plugin add nativescript-contacts-lite`
+Run `tns plugin add https://github.com/abhayastudios/nativescript-contacts-lite.git`
 
 ## Usage
 
 To use the contacts module you must first `require()` it.
 
 ```js
-var contacts = require("nativescript-contacts-lite");
+var Contacts = require("nativescript-contacts-lite");
 ```
 
 ### Methods
@@ -38,7 +38,7 @@ let desiredFields = ['displayName','phone','photo'];
 console.log('Loading contacts...');
 let timer = new Date().getTime();
 
-PhoneContacts.getContactsWorker(desiredFields).then((result) => {
+Contacts.getContactsWorker(desiredFields).then((result) => {
   console.log(`Loading contacts completed in ${(new Date().getTime() - timer)} ms. Found ${result.length} contacts.`);
   console.dump(result);
 }, (e) => { console.dump(e); });
