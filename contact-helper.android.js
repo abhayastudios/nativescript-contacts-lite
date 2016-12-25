@@ -203,7 +203,9 @@ exports.getAndroidQueryColumns = (fields) => {
 
   columnsToFetch.push("contact_id","mimetype","account_name");
 
-  if (fields.indexOf("displayName") > -1) { columnsToFetch.push("display_name"); }
+  if (fields.indexOf("displayName") > -1) {
+    columnsToFetch.push(android.provider.ContactsContract.ContactNameColumns.DISPLAY_NAME_PRIMARY);
+  }
 
   if (fields.indexOf("detailedName") > -1) {
     columnsToFetch.push(android.provider.ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
@@ -284,21 +286,25 @@ exports.getAndroidMimeTypes = (fields) => {
 /*
    returns an string with the selection clause, e.g. 'mimetype=? OR mimetype=?'
 */
-exports.getSelectionClause = ((fields) => {
+exports.getSelectionClause = ((fields,searchTerm) => {
+  let clause = '';
   let clauseArr = [];
   exports.getAndroidMimeTypes(fields).forEach(() => {
     clauseArr.push('mimetype=?','OR');
   });
   clauseArr.pop();
-  return(clauseArr.join(' '));
+  clause = `(${clauseArr.join(' ')})`
+  if (searchTerm) { clause += ` AND ${android.provider.ContactsContract.ContactNameColumns.DISPLAY_NAME_PRIMARY} LIKE ?`; }
+  return(clause);
 });
 
 /*
    returns an array of strings with the arguments for the selection clause,
    e.g. ['vnd.android.cursor.item/name','vnd.android.cursor.item/photo']
 */
-exports.getSelectionArgs = ((fields) => {
+exports.getSelectionArgs = ((fields,searchTerm) => {
   let argsArr = [];
   exports.getAndroidMimeTypes(fields).forEach((mimetype) => { argsArr.push(mimetype); });
+  if (searchTerm) { argsArr.push(`%${searchTerm}%`); }
   return(argsArr);
 });
