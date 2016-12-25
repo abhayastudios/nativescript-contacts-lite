@@ -1,5 +1,6 @@
 require('globals'); // necessary to bootstrap tns modules on the new thread
-var helper = require("./contact-helper");
+let helper = require("./contact-helper");
+let debug = false;
 
 /* pass debug messages to main thread since web workers do not have console access */
 let console_log = (msg) => { postMessage({ type: 'debug', message: msg }); }
@@ -7,16 +8,16 @@ let console_dump = (msg) => { postMessage({ type: 'dump', message: msg }); }
 
 self.onmessage = (event) => {
   try {
-    let contacts = []; // array containing contacts sturcture we are building
+    let fields = event.data.fields; // desired fields to retrieve from phone storage backend
 
     /* variables used in android backend query */
     let content_uri = android.provider.ContactsContract.Data.CONTENT_URI,   // The content URI of the words table
-        columnsToFetch = helper.getAndroidQueryColumns(event.data.fields),  // The columns to return for each row
-        selectionClause = helper.getSelectionClause(event.data.fields),     // Either null, or e.g.: CONTACT_ID + "=? AND " + MIMETYPE + "=?"
-        selectionArgs = helper.getSelectionArgs(event.data.fields),         // Either null, or an array of string args for selection clause
+        columnsToFetch = helper.getAndroidQueryColumns(fields),             // The columns to return for each row
+        selectionClause = helper.getSelectionClause(fields),                // Either null, or e.g.: CONTACT_ID + "=? AND " + MIMETYPE + "=?"
+        selectionArgs = helper.getSelectionArgs(fields),                    // Either null, or an array of string args for selection clause
         sortOrder = null;                                                   // The sort order for the returned rows
 
-    console_dump(columnsToFetch);
+    // console_dump(columnsToFetch);
     // console_log(selectionClause);
     // console_dump(selectionArgs);
 
@@ -24,7 +25,7 @@ self.onmessage = (event) => {
 
     var timer = new Date().getTime();
     let c = helper.getAndroidContext().getContentResolver().query(content_uri, columnsToFetch, selectionClause, selectionArgs, sortOrder);
-    console_log(`Querying storage backend completed in ${(new Date().getTime() - timer)} ms!`);
+    if (debug) { console_log(`Querying storage backend completed in ${(new Date().getTime() - timer)} ms!`); }
 
     /*
        transform raw data into desired data structure
@@ -33,12 +34,20 @@ self.onmessage = (event) => {
        initial position is -1 and retrieving data at that position you will get an exception
      */
 
+    let contacts = []; // array containing contacts object to return
     var timer = new Date().getTime();
     while (c.moveToNext()) {
-      let contact = helper.convertNativeCursorToJson(c);
-      contacts.push(contact);
+      let contact_id = helper.getColumnValue(c,columnsToFetch.indexOf("contact_id"));
+      // see if contact_id already exists in contacts to pass existing object for appending
+      let existingContactObj = undefined;
+      let existingContactIndex = contacts.findIndex((item,index) => { return item.contact_id === contact_id });
+      if (existingContactIndex > -1) { existingContactObj=contacts[existingContactIndex]; }
+
+      let contact = helper.convertNativeCursorToContact(c,fields,columnsToFetch,existingContactObj);
+      if (existingContactIndex > -1) { contacts[existingContactIndex] = contact; }
+      else { contacts.push(contact); }
     }
-    console_log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`);
+    if (debug) { console_log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
     c.close();
 
     postMessage({ type: 'result', message: contacts });

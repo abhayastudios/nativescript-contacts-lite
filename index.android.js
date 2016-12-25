@@ -1,4 +1,4 @@
-exports.getContacts = (fields,searchPredicate=undefined) => {
+exports.getContactsWorker = (fields,searchPredicate=undefined) => {
   return new Promise((resolve, reject) => {
     let worker = new Worker('./get-contacts-worker.js'); // relative for caller script path
     worker.postMessage({ "searchPredicate": searchPredicate, "fields" : fields });
@@ -16,3 +16,8 @@ exports.getContacts = (fields,searchPredicate=undefined) => {
     });
   });
 };
+
+// exports.getContacts = (fields,searchPredicate=undefined) => {
+//   return new Promise((resolve, reject) => {
+//   });
+// };
