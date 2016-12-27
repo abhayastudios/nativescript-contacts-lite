@@ -89,6 +89,9 @@ Contacts.getContactsWorker(desiredFields).then((result) => {
 
 ### Android
 
+#### Permissions
+This plugin uses the easy to use [nativescript-permissions](https://github.com/NathanaelA/nativescript-permissions) plugin by Nathanael Anderson for obtaining read-only permissions on Android 6.
+
 ### iOS
 Since the plugin uses the Contact framework it is supported only on iOS 9.0 and above!
 

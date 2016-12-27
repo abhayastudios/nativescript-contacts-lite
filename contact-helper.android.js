@@ -1,4 +1,23 @@
 var constants = require("./constants");
+var Perms = require("nativescript-permissions");
+
+exports.handlePermission = (() => {
+  return new Promise((resolve, reject) => {
+    // check whether we already have permissions
+    if (Perms.hasPermission(android.Manifest.permission.READ_CONTACTS)) {
+      resolve();
+    }
+
+    Perms.requestPermission(
+      android.Manifest.permission.READ_CONTACTS,
+      "This application requires read-only access to your contacts!"
+    ).then(() => {
+      resolve();
+    }).catch(() => {
+      reject('Unable to obtain permission to read contacts!');
+    });
+  });
+});
 
 /* 
    inside a web worker appModule.android.context does not work

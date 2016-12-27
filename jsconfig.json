@@ -10,6 +10,7 @@
         "get-contacts-worker.ios.js",
         "contact-helper.android.js",
         "contact-helper.ios.js",
+        "constants.android.js",
         "node_modules\\tns-core-modules\\tns-core-modules.d.ts"
     ]
 }

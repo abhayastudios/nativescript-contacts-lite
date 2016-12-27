@@ -23,16 +23,15 @@
       "url": "https://github.com/NathanaelA"
     }
   ],
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/abhayastudios/nativescript-contacts-lite/blob/master/LICENSE"
-  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/abhayastudios/nativescript-contacts-lite/issues"
   },
   "homepage": "https://github.com/abhayastudios/nativescript-contacts-lite",
   "nativescript": {},
+  "dependencies": {
+    "nativescript-permissions": "^1.2.2"
+  },
   "devDependencies": {
-    "tns-core-modules": "1.6.0"
   }
 }
