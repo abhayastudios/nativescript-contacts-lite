@@ -1,15 +1,19 @@
-require('globals'); // necessary to bootstrap tns modules on the new thread
-let helper = require("./contact-helper");
+let helper = require("./contacts-helper");
 
-/* pass debug messages to main thread since web workers do not have console access */
-let console_log = (msg) => { postMessage({ type: 'debug', message: msg }); }
+/* 
+   if running inside a web worker, need to pass debug messages to main thread as workers do not have console access
+*/
+let console_log = (msg) => { postMessage({ type: 'log', message: msg }); }
 let console_dump = (msg) => { postMessage({ type: 'dump', message: msg }); }
 
-self.onmessage = (event) => {
+/*
+   fields:        desired fields to retrieve from phone storage backend
+   searchTerm:    search only for contacts whose display_name start with this term
+   debug          whether to print debug messages to the console
+   worker:        wether we are running inside a web worker
+*/
+exports.getContactsFromBackend = ((fields,searchTerm,debug,worker) => {
   try {
-    let debug = event.data.debug;               // whether to print debug messages to the console
-    let fields = event.data.fields;             // desired fields to retrieve from phone storage backend
-    let searchTerm = event.data.searchTerm;     // search only for contacts whose display_name start with this term
 
     /* variables used in android backend query */
 
@@ -23,11 +27,11 @@ self.onmessage = (event) => {
 
     var timer = new Date().getTime();
     let c = helper.getAndroidContext().getContentResolver().query(content_uri, columnsToFetch, selectionClause, selectionArgs, sortOrder);
-    if (debug) { console_log(`Querying storage backend completed in ${(new Date().getTime() - timer)} ms!`); }
+    if (debug && worker) { console_log(`Querying storage backend completed in ${(new Date().getTime() - timer)} ms!`); }
+    if (debug && !worker) { console.log(`Querying storage backend completed in ${(new Date().getTime() - timer)} ms!`); }
 
     /*
        transform raw data into desired data structure
-
        moveToNext() moves the row pointer to the next row in the cursor
        initial position is -1 and retrieving data at that position you will get an exception
      */
@@ -45,9 +49,12 @@ self.onmessage = (event) => {
       if (existingContactIndex > -1) { contacts[existingContactIndex] = contact; }
       else { contacts.push(contact); }
     }
-    if (debug) { console_log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
+    if (debug && worker) { console_log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
+    if (debug && !worker) { console.log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
     c.close();
 
-    postMessage({ type: 'result', message: contacts });
-  } catch (e) { postMessage({ type: 'result', message: e }); }
-}
+    if (worker) { postMessage({ type: 'result', message: contacts }); } else { return({ type: 'result', message: contacts }); }
+  } catch (e) { 
+    if (worker) { postMessage({ type: 'error', message: e }); } else { return({ type: 'error', message: e }); }
+  }
+});
