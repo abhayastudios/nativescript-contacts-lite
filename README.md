@@ -14,7 +14,7 @@ On a relatively old Samsung Galaxy S4 a list of ~600 contacts is returned somewh
 
 ### iOS
 
-Support for iOS will follow in a couple of days.
+On the iOS simulator with >1000 contacts it returns up to ~600ms. This could use some real iOS device data if anyone has some.
 
 ## Installation
 
