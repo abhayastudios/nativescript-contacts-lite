@@ -1,7 +1,8 @@
 exports.MIME_TYPES = {
-  "detailedName" : "vnd.android.cursor.item/name",
+  "name_details" : "vnd.android.cursor.item/name",
   "phone" : "vnd.android.cursor.item/phone_v2",
   "photo" : "vnd.android.cursor.item/photo",
+  "thumbnail" : "vnd.android.cursor.item/photo",
   "organization" : "vnd.android.cursor.item/organization",
   "nickname" : "vnd.android.cursor.item/nickname",
   "note" : "vnd.android.cursor.item/note",
@@ -14,7 +15,7 @@ exports.MIME_TYPES = {
    mapping of Android data types (needed for reverse lookup of "dataN" fields)
 */
 DATA_TYPES = {
-  "detailedName" : {
+  "name_details" : {
     "family": android.provider.ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
     "given": android.provider.ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
     "middle": android.provider.ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME,

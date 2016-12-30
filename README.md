@@ -39,14 +39,15 @@ An array containing the desired fields to fetch from phone's storage backend. Po
 ```js
 [
   'address',
-  'detailedName',
-  'displayName',
+  'display_name',
   'email',
+  'name_details',
   'nickname',
   'note',
   'organization',
   'phone',
   'photo',
+  'thumbnail',
   'website'
 ]
 ```
@@ -62,7 +63,7 @@ Boolean (true/false) determining whether to pass debug messages to the console. 
 
 **Example using getContacts**
 ```js
-let desiredFields = ['displayName','phone'];
+let desiredFields = ['display_name','phone'];
 let searchTerm = 'Jon';
 
 console.log('Loading contacts...');
@@ -77,7 +78,7 @@ Contacts.getContacts(desiredFields,searchTerm).then((result) => {
 
 **Example using getContactsWorker**
 ```js
-let desiredFields = ['displayName','phone','photo','email','organization'];
+let desiredFields = ['display_name','phone','thumbnail','email','organization'];
 
 console.log('Loading contacts...');
 let timer = new Date().getTime();
@@ -94,9 +95,10 @@ Contacts.getContactsWorker(desiredFields).then((result) => {
 ### Android
 
 #### Permissions
-This plugin uses the [nativescript-permissions](https://github.com/NathanaelA/nativescript-permissions) plugin by Nathanael Anderson for obtaining read-only permissions on Android 6.
+This plugin uses the [nativescript-permissions](https://github.com/NathanaelA/nativescript-permissions) plugin by Nathanael Anderson for obtaining read-only permissions to the phone's contacts on Android 6.
 
 ### iOS
 Since the plugin uses the Contact framework it is supported only on iOS 9.0 and above!
 
 ## Acknowledgements
+The iOS part of this plugin is based on the [nativescript-contacts](https://github.com/firescript/nativescript-contacts) plugin.

@@ -49,12 +49,11 @@ exports.getContactsFromBackend = ((fields,searchTerm,debug,worker) => {
       if (existingContactIndex > -1) { contacts[existingContactIndex] = contact; }
       else { contacts.push(contact); }
     }
-    if (debug && worker) { console_log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
-    if (debug && !worker) { console.log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
     c.close();
 
-    if (worker) { postMessage({ type: 'result', message: contacts }); } else { return({ type: 'result', message: contacts }); }
-  } catch (e) { 
-    if (worker) { postMessage({ type: 'error', message: e }); } else { return({ type: 'error', message: e }); }
-  }
+    if (debug && worker) { console_log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
+    if (debug && !worker) { console.log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
+
+    return({ type: 'result', message: contacts });
+  } catch (e) { return({ type: 'error', message: e }); }
 });

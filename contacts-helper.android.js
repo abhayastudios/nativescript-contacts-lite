@@ -1,5 +1,6 @@
 var constants = require("./constants");
 var Perms = require("nativescript-permissions");
+var imageSource = require("image-source");
 
 exports.handlePermission = (() => {
   return new Promise((resolve, reject) => {
@@ -22,7 +23,7 @@ exports.handlePermission = (() => {
 /* 
    inside a web worker appModule.android.context does not work
 */
-exports.getAndroidContext = () => {
+var getAndroidContext = () => {
   if (typeof appModule != "undefined" && appModule.hasOwnProperty('android') && appModule.android.hasOwnProperty('context')) {
     return (appModule.android.context);
   }
@@ -33,6 +34,7 @@ exports.getAndroidContext = () => {
   ctx = java.lang.Class.forName("android.app.ActivityThread").getMethod("currentApplication", null).invoke(null, null);
   return ctx;
 };
+exports.getAndroidContext = getAndroidContext;
 
 /*
    returns value for column with index columnIndex
@@ -76,34 +78,34 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
     contact.contact_id = getColumnValue(cursor,columnNames.indexOf("contact_id"));
   }
 
-  /* displayName */
+  /* display_name */
 
-  if (fields.indexOf("displayName") > -1 && !existingContact) {
-    contact.displayName = getColumnValue(cursor,columnNames.indexOf("display_name"));
+  if (fields.indexOf("display_name") > -1 && !existingContact) {
+    contact.display_name = getColumnValue(cursor,columnNames.indexOf("display_name"));
   }
 
-  /* detailedName */
+  /* name_details */
 
-  if (fields.indexOf("detailedName") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['detailedName']) {
-    var record = { "accountName" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
-    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['detailedName']['family']));
+  if (fields.indexOf("name_details") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['name_details']) {
+    var record = { "account_name" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
+    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['name_details']['family']));
     if (columnValue != null) { record.family = columnValue }
-    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['detailedName']['given']));
+    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['name_details']['given']));
     if (columnValue != null) { record.given = columnValue }
-    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['detailedName']['middle']));
+    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['name_details']['middle']));
     if (columnValue != null) { record.middle = columnValue }
-    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['detailedName']['prefix']));
+    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['name_details']['prefix']));
     if (columnValue != null) { record.prefix = columnValue }
-    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['detailedName']['suffix']));
+    var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['name_details']['suffix']));
     if (columnValue != null) { record.suffix = columnValue }
-    if (!existingContact || !contact.hasOwnProperty('detailedName')) { contact.detailedName = []; }
-    contact.detailedName.push(record);
+    if (!existingContact || !contact.hasOwnProperty('name_details')) { contact.name_details = []; }
+    contact.name_details.push(record);
   }
 
   /* phone */
 
   if (fields.indexOf("phone") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['phone']) {
-    var record = { "accountName" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
+    var record = { "account_name" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['phone']['type']));
     if (columnValue != null) { record.type = constants.DATA_TYPES['phone']['labels'][columnValue] || columnValue }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['phone']['number']));
@@ -114,17 +116,36 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
 
   /* photo */
 
-  if (fields.indexOf("photo") > -1 && !existingContact) { 
-    contact.photo = { 
-      "photoUri": getColumnValue(cursor,columnNames.indexOf("photo_uri")),
-      "photoThumbUri": getColumnValue(cursor,columnNames.indexOf("photo_thumb_uri"))
-    }
+  if (fields.indexOf("photo") > -1 && !existingContact) {
+    var image = null;
+    var imageUri = getColumnValue(cursor,columnNames.indexOf("photo_uri"));
+    if (imageUri!==null) {
+      image = android.provider.MediaStore.Images.Media.getBitmap(
+        getAndroidContext().getContentResolver(),
+        android.net.Uri.parse(imageUri)
+      );
+      contact.photo = { "image" : imageSource.fromNativeSource(image), "imageUri": imageUri }
+    } else { contact.photo = {}; }
+  }
+
+  /* thumbnail */
+
+  if (fields.indexOf("thumbnail") > -1 && !existingContact) {
+    var image = null;
+    var imageUri = getColumnValue(cursor,columnNames.indexOf("photo_thumb_uri"));
+    if (imageUri!==null) {
+      image = android.provider.MediaStore.Images.Media.getBitmap(
+        getAndroidContext().getContentResolver(),
+        android.net.Uri.parse(imageUri)
+      );
+      contact.thumbnail = { "image": imageSource.fromNativeSource(image), "imageUri": imageUri }
+    } else { contact.thumbnail = {}; }
   }
 
   /* organization */
 
   if (fields.indexOf("organization") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['organization']) {
-    var record = { "accountName" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
+    var record = { "account_name" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['organization']['type']));
     if (columnValue != null) { record.type = constants.DATA_TYPES['organization']['labels'][columnValue] || columnValue }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['organization']['department']));
@@ -144,7 +165,7 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['nickname']));
     if (columnValue!=null && columnValue!='') { 
       record.name = columnValue;
-      record.accountName = getColumnValue(cursor,columnNames.indexOf("account_name"));
+      record.account_name = getColumnValue(cursor,columnNames.indexOf("account_name"));
     } else { record = null; }
     if (!existingContact || !contact.hasOwnProperty('nickname')) { contact.nickname = []; }
     if (record!=null) { contact.nickname.push(record); }
@@ -157,7 +178,7 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['note']));
     if (columnValue!=null && columnValue!='') { 
       record.note = columnValue;
-      record.accountName = getColumnValue(cursor,columnNames.indexOf("account_name"));
+      record.account_name = getColumnValue(cursor,columnNames.indexOf("account_name"));
     } else { record = null; }
     if (!existingContact || !contact.hasOwnProperty('note')) { contact.note = []; }
     if (record!=null) { contact.note.push(record); }
@@ -166,7 +187,7 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
   /* email */
 
   if (fields.indexOf("email") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['email']) {
-    var record = { "accountName" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
+    var record = { "account_name" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['email']['type']));
     if (columnValue != null) { record.type = constants.DATA_TYPES['email']['labels'][columnValue] || columnValue }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['email']['data']));
@@ -178,7 +199,7 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
   /* website */
 
   if (fields.indexOf("website") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['website']) {
-    var record = { "accountName" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
+    var record = { "account_name" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['website']['type']));
     if (columnValue != null) { record.type = constants.DATA_TYPES['website']['labels'][columnValue] || columnValue }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['website']['url']));
@@ -190,7 +211,7 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
   /* address */
 
   if (fields.indexOf("address") > -1 && getColumnValue(cursor,columnNames.indexOf("mimetype")) == constants.MIME_TYPES['address']) {
-    var record = { "accountName" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
+    var record = { "account_name" : getColumnValue(cursor,columnNames.indexOf("account_name")) }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['address']['type']));
     if (columnValue != null) { record.type = constants.DATA_TYPES['address']['labels'][columnValue] || columnValue }
     var columnValue = getColumnValue(cursor,columnNames.indexOf(constants.DATA_TYPES['address']['formatted_address']));
@@ -222,11 +243,11 @@ exports.getAndroidQueryColumns = (fields) => {
 
   columnsToFetch.push("contact_id","mimetype","account_name");
 
-  if (fields.indexOf("displayName") > -1) {
+  if (fields.indexOf("display_name") > -1) {
     columnsToFetch.push(android.provider.ContactsContract.ContactNameColumns.DISPLAY_NAME_PRIMARY);
   }
 
-  if (fields.indexOf("detailedName") > -1) {
+  if (fields.indexOf("name_details") > -1) {
     columnsToFetch.push(android.provider.ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
     columnsToFetch.push(android.provider.ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME);
     columnsToFetch.push(android.provider.ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME);
@@ -287,7 +308,7 @@ exports.getAndroidQueryColumns = (fields) => {
 exports.getAndroidMimeTypes = (fields) => {
   let datatypes = [];
 
-  if (fields.indexOf("detailedName") > -1) { datatypes.push(constants.MIME_TYPES['detailedName']); }
+  if (fields.indexOf("name_details") > -1) { datatypes.push(constants.MIME_TYPES['name_details']); }
   if (fields.indexOf("phone") > -1) { datatypes.push(constants.MIME_TYPES['phone']); }
   if (fields.indexOf("photo") > -1) { 
     // datatypes.push(constants.MIME_TYPES['photo']); // photo + thumb URI are obtained in getAndroidQueryColumns 
