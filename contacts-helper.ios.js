@@ -64,18 +64,22 @@ exports.convertNativeCursorToContact = (c,fields) => {
 
   /* photo */
 
-  if (fields.indexOf("photo") > -1) { 
+  if (fields.indexOf("photo") > -1) {
+    contact.photo = null;
     if (c.imageDataAvailable) {
-      contact.photo = { "image": imageSource.fromData(c.imageData) }
-    } else { contact.photo = {}; }
+      var photo = imageSource.fromData(c.imageData);
+      if (photo) { contact.photo = "data:image/png;base64,"+photo.toBase64String("png"); }
+    }
   }
 
   /* thumbnail */
 
-  if (fields.indexOf("thumbnail") > -1) { 
+  if (fields.indexOf("thumbnail") > -1) {
+    contact.thumbnail = null;
     if (c.imageDataAvailable) {
-      contact.thumbnail = { "image": imageSource.fromData(c.thumbnailImageData) }
-    } else { contact.thumbnail = {}; }
+      var thumb = imageSource.fromData(c.thumbnailImageData);
+      if (thumb) { contact.thumbnail = "data:image/png;base64,"+thumb.toBase64String("png"); }
+    }
   }
 
   /* organization */

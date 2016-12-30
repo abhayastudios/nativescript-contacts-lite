@@ -14,7 +14,7 @@ On a relatively old Samsung Galaxy S4 a list of ~600 contacts is returned somewh
 
 ### iOS
 
-On the iOS simulator with >1000 contacts it returns up to ~600ms. This could use some real iOS device data if anyone has some.
+On the iOS simulator with >1000 contacts it returns in up to ~600ms. This could use some real iOS device data if anyone has some.
 
 ## Installation
 
@@ -92,12 +92,17 @@ Contacts.getContactsWorker(desiredFields).then((result) => {
 
 ## Notes
 
-### Android
+### General
+#### Images
+
+The plugin returns `photo` & `thumbnail` images as a base64 encoded string ready to be used as the source attribute of an image, e.g. `<Image *ngIf="item.thumbnail" [src]="item.thumbnail"></Image>`
+
+### Android Specifics
 
 #### Permissions
 This plugin uses the [nativescript-permissions](https://github.com/NathanaelA/nativescript-permissions) plugin by Nathanael Anderson for obtaining read-only permissions to the phone's contacts on Android 6.
 
-### iOS
+### iOS Specifics
 Since the plugin uses the Contact framework it is supported only on iOS 9.0 and above!
 
 ## Acknowledgements

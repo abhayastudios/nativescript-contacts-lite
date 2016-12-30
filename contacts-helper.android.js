@@ -124,8 +124,8 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
         getAndroidContext().getContentResolver(),
         android.net.Uri.parse(imageUri)
       );
-      contact.photo = { "image" : imageSource.fromNativeSource(image), "imageUri": imageUri }
-    } else { contact.photo = {}; }
+      contact.photo = "data:image/png;base64,"+imageSource.fromNativeSource(image).toBase64String("png");
+    } else { contact.photo = null; }
   }
 
   /* thumbnail */
@@ -138,8 +138,8 @@ exports.convertNativeCursorToContact = (cursor,fields,columnNames,existingContac
         getAndroidContext().getContentResolver(),
         android.net.Uri.parse(imageUri)
       );
-      contact.thumbnail = { "image": imageSource.fromNativeSource(image), "imageUri": imageUri }
-    } else { contact.thumbnail = {}; }
+      contact.thumbnail = "data:image/png;base64,"+imageSource.fromNativeSource(image).toBase64String("png");
+    } else { contact.thumbnail = null; }
   }
 
   /* organization */
@@ -293,7 +293,10 @@ exports.getAndroidQueryColumns = (fields) => {
     columnsToFetch.push(android.provider.ContactsContract.CommonDataKinds.Website.TYPE);
   }
   if (fields.indexOf("photo") > -1) {
-    columnsToFetch.push("photo_uri","photo_thumb_uri");
+    columnsToFetch.push("photo_uri");
+  }
+  if (fields.indexOf("thumbnail") > -1) {
+    columnsToFetch.push("photo_thumb_uri");
   }
 
   // filter out any nulls & duplicates
