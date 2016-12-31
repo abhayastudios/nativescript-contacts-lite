@@ -308,7 +308,7 @@ exports.getAndroidQueryColumns = (fields) => {
 /*
    returns an array with names of relevant metadata types to fetch from storage backend
 */
-exports.getAndroidMimeTypes = (fields) => {
+let getAndroidMimeTypes = (fields) => {
   let datatypes = [];
 
   if (fields.indexOf("name_details") > -1) { datatypes.push(constants.MIME_TYPES['name_details']); }
@@ -325,19 +325,25 @@ exports.getAndroidMimeTypes = (fields) => {
 
   return datatypes.filter((value) => { return value != null; }); // filter out any nulls
 }
+exports.getAndroidMimeTypes = getAndroidMimeTypes;
 
 /*
-   returns an string with the selection clause, e.g. 'mimetype=? OR mimetype=?'
+   returns an string with the selection clause, e.g. '(mimetype=? OR mimetype=?) AND searchTerm="Jon"'
 */
-exports.getSelectionClause = ((fields,searchTerm) => {
-  let clause = '';
-  let clauseArr = [];
-  exports.getAndroidMimeTypes(fields).forEach(() => {
-    clauseArr.push('mimetype=?','OR');
-  });
-  clauseArr.pop();
-  clause = `(${clauseArr.join(' ')})`
-  if (searchTerm) { clause += ` AND ${android.provider.ContactsContract.ContactNameColumns.DISPLAY_NAME_PRIMARY} LIKE ?`; }
+exports.getSelectionClause = ((options) => {
+  let clause = '', clauseArray = [], fieldsArray = [];
+
+  getAndroidMimeTypes(options.fields).forEach((mimetype) => { fieldsArray.push('mimetype=?','OR'); });
+  fieldsArray.pop();
+  if (fieldsArray.length >0) { clauseArray.push(`(${fieldsArray.join(' ')})`,'AND'); }
+
+  if (options.hasOwnProperty('searchTerm') && options.searchTerm) {
+    clauseArray.push(`${android.provider.ContactsContract.ContactNameColumns.DISPLAY_NAME_PRIMARY} LIKE ?`,'AND');
+  }
+
+  if (options.hasOwnProperty('contactId') && options.contactId) { clauseArray.push('contact_id=?','AND'); }
+  clauseArray.pop();
+  if (clauseArray.length >0) { clause = clauseArray.join(' '); }
   return(clause);
 });
 
@@ -345,9 +351,12 @@ exports.getSelectionClause = ((fields,searchTerm) => {
    returns an array of strings with the arguments for the selection clause,
    e.g. ['vnd.android.cursor.item/name','vnd.android.cursor.item/photo']
 */
-exports.getSelectionArgs = ((fields,searchTerm) => {
-  let argsArr = [];
-  exports.getAndroidMimeTypes(fields).forEach((mimetype) => { argsArr.push(mimetype); });
-  if (searchTerm) { argsArr.push(`%${searchTerm}%`); }
-  return(argsArr);
+exports.getSelectionArgs = ((options) => {
+  let argsArray = [];
+
+  getAndroidMimeTypes(options.fields).forEach((mimetype) => { argsArray.push(mimetype); });
+  if (options.hasOwnProperty('searchTerm') && options.searchTerm) { argsArray.push(`%${options.searchTerm}%`); }
+  if (options.hasOwnProperty('contactId') && options.contactId) { argsArray.push(`${options.contactId}`); }
+  //if (options.hasOwnProperty('contactId') && options.contactId) { argsArray.push(options.contactId); }
+  return(argsArray);
 });

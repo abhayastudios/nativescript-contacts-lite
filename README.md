@@ -2,25 +2,11 @@
 
 This nativescript-contacts-lite plugin provides pretty fast read-only access to the iOS and Android contact directory. By limiting the scope of the result set through the `desiredFields`, it is possible to obtain a JSON object containing the relevant data of the contact directory within a couple of hundred milliseconds.
 
-The plugin provides both methods that run in either the main/UI thread or within a web worker. Although offloading the processing to a separate thread adds ~350ms of web worker initialization time, it guarantees that the main UI thread will continue to work smoothly. 
-
-If you are implementing an autocomplete where on each key you are querying a smaller subset of the contacts, you will probably want to go with the non-worker variant to avoid web worker initialization time and the user is waiting anyway. On the other hand, if you are reading the entire contact directory while initializing your app, you probably want this to happen in the background and to avoid the UI to get stuck while processing which is when you should use the web worker variant.
-
-## Performance
-
-### Android
-
-On a relatively old Samsung Galaxy S4 a list of ~600 contacts is returned somewhere between ~300ms up to ~2s depending on the desired fields and whether you run in the main thread or in a web worker.
-
-### iOS
-
-On the iOS simulator with >1000 contacts it returns in up to ~600ms. This could use some real iOS device data if anyone has some.
-
-## Installation
+# Installation
 
 Run `tns plugin add nativescript-contacts-lite`
 
-## Usage
+# Usage
 
 To use the contacts module you must first `require()` it.
 
@@ -28,13 +14,12 @@ To use the contacts module you must first `require()` it.
 var Contacts = require("nativescript-contacts-lite");
 ```
 
-### Methods
+## Methods
 
-####getContacts & getContactsWorker
+### getContacts & getContactsWorker
 Both methods retrieve contacts and share the same interface. The difference is that the former runs in the main thread and the latter within a web worker.
 
 **Argument 1: desiredFields**
-
 An array containing the desired fields to fetch from phone's storage backend. Possible values are:
 ```js
 [
@@ -53,11 +38,9 @@ An array containing the desired fields to fetch from phone's storage backend. Po
 ```
 
 **Argument 2: searchTerm (optional)**
-
 A string with a search term to limit the result set to only contact whose `display_name` contain the term. Defaults to fetching all relevant contacts if an empty search term is provided or none at all.
 
 **Argument 3: debug (optional)**
-
 Boolean (true/false) determining whether to pass debug messages to the console. Defaults to false.
 
 
@@ -90,20 +73,77 @@ Contacts.getContactsWorker(desiredFields).then((result) => {
 }, (e) => { console.dump(e); });
 ```
 
-## Notes
 
-### General
-#### Images
+### getContactById
+Get contact details for a specific contact.
 
+**Argument 1: contactId**
+The identifier of the contact you wish to obtain details of.
+
+**Argument 2: desiredFields**
+An array containing the desired fields to fetch from phone's storage backend. See `getContacts` method for possible values.
+
+**Argument 3: debug (optional)**
+Boolean (true/false) determining whether to pass debug messages to the console. Defaults to false.
+
+**Example using getContactsWorker**
+```js
+let contact_id = contact.contact_id // get id from result of getContacts method
+
+let desiredFields = [
+  'address',
+  'display_name',
+  'email',
+  'name_details',
+  'nickname',
+  'note',
+  'organization',
+  'phone',
+  'photo',
+  'thumbnail',
+  'website'
+]
+
+Contacts.getContactById(contact_id,desiredFields).then((result) => {
+  console.dump(result);
+}, (e) => { console.dump(e); });
+```
+
+
+# Performance
+
+## Speed Considerations
+
+### Running in main thread versus web worker
+The plugin provides both methods that run in either the main/UI thread or within a web worker. Although offloading the processing to a separate thread adds web worker initialization time, it guarantees that the main UI thread will continue to work smoothly. 
+
+If you are implementing an autocomplete where on each key you are querying a smaller subset of the contacts, you will probably want to go with the non-worker variant to avoid web worker initialization time while the user is waiting. On the other hand, if you are reading the entire contact directory while initializing your app, you probably want this to happen in the background to avoid the UI getting stuck while processing. In the latter case you probably would want to use the web worker variant.
+
+### Contact Picker Example
+Another way to speed up performance is possible in certain cases like when you are building a contact picker. In this case it is probably good enough to first provide a narrow array of desiredFields like `['display_name','thumbnail']` to `getContacts` to display the list. Only when the user selects a specific contact, you can obtain all details for a specific contact by supplying a wider array of desiredFields to `getContactById`.
+
+
+## Benchmarks
+
+### Android
+On a relatively old Samsung Galaxy S4 a list of ~600 contacts is returned somewhere between ~300ms up to ~2s depending on the desired fields and whether you run in the main thread or in a web worker.
+
+### iOS
+On the iOS simulator with >1000 contacts it returns in up to ~600ms. This could use some real iOS device data if anyone has some.
+
+
+# Notes
+
+## Photo & Thumbnail Images
 The plugin returns `photo` & `thumbnail` images as a base64 encoded string ready to be used as the source attribute of an image, e.g. `<Image *ngIf="item.thumbnail" [src]="item.thumbnail"></Image>`
 
-### Android Specifics
+## Android Specifics
 
-#### Permissions
-This plugin uses the [nativescript-permissions](https://github.com/NathanaelA/nativescript-permissions) plugin by Nathanael Anderson for obtaining read-only permissions to the phone's contacts on Android 6.
+### Permissions
+This plugin uses the [nativescript-permissions](https://github.com/NathanaelA/nativescript-permissions) plugin by Nathanael Anderson for obtaining read-only permissions to the phone's contacts on Android 6 and above.
 
-### iOS Specifics
+## iOS Specifics
 Since the plugin uses the Contact framework it is supported only on iOS 9.0 and above!
 
-## Acknowledgements
+# Acknowledgements
 The iOS part of this plugin is based on the [nativescript-contacts](https://github.com/firescript/nativescript-contacts) plugin.

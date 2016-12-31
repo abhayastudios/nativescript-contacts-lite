@@ -26,9 +26,9 @@ exports.getContactsFromBackend = ((fields,searchTerm,debug,worker) => {
 
     if (searchTerm===undefined) {
       var store = new CNContactStore(),
-        error,
-        fetch = CNContactFetchRequest.alloc().initWithKeysToFetch(columnsToFetch),
-        nativeMutableArray = new NSMutableArray();
+          error,
+          fetch = CNContactFetchRequest.alloc().initWithKeysToFetch(columnsToFetch),
+          nativeMutableArray = new NSMutableArray();
   
       fetch.unifyResults = true;
       fetch.predicate = null;
@@ -48,12 +48,11 @@ exports.getContactsFromBackend = ((fields,searchTerm,debug,worker) => {
 
     if (searchTerm) {
       var store = new CNContactStore(),
-        error,
-        foundContacts = store.unifiedContactsMatchingPredicateKeysToFetchError(
-          CNContact.predicateForContactsMatchingName(searchTerm),
-          columnsToFetch,
-          error
-      );
+          error,
+          foundContacts = store.unifiedContactsMatchingPredicateKeysToFetchError(
+            CNContact.predicateForContactsMatchingName(searchTerm),
+            columnsToFetch, error
+          );
 
       if (error && worker) { postMessage({ type: 'error', message: error }); } 
       if (error && !worker) { return({ type: 'error', message: error }); } 
@@ -68,5 +67,37 @@ exports.getContactsFromBackend = ((fields,searchTerm,debug,worker) => {
     if (debug && !worker) { console.log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
 
     return({ type: 'result', message: contacts });
+  } catch (e) { return({ type: 'error', message: e }); }
+});
+
+/*
+   fields:        desired fields to retrieve from phone storage backend
+   searchTerm:    search only for contacts whose display_name start with this term
+   debug          whether to print debug messages to the console
+*/
+exports.getContactFromBackendById = ((contactId,fields,debug) => {
+  try {
+
+    /* variables used in ios backend query */
+
+    let contact = {}; // contact object to return
+    let columnsToFetch = helper.getIOSQueryColumns(fields); // columns to return for each row
+
+    var timer = new Date().getTime();
+
+    /* getting single contact by contact_id */
+
+    var store = new CNContactStore(),
+        error,
+        foundContact = store.unifiedContactWithIdentifierKeysToFetchError(contactId,columnsToFetch,error);
+
+    if (error) { return({ type: 'error', message: error }); } 
+
+    //transform raw data into desired data structure */
+    contact = helper.convertNativeCursorToContact(foundContact,fields);
+
+    if (debug) { console.log(`Processing data completed in ${(new Date().getTime() - timer)} ms!`); }
+
+    return({ type: 'result', message: contact });
   } catch (e) { return({ type: 'error', message: e }); }
 });
