@@ -28,7 +28,12 @@
     "url": "https://github.com/abhayastudios/nativescript-contacts-lite/issues"
   },
   "homepage": "https://github.com/abhayastudios/nativescript-contacts-lite",
-  "nativescript": {},
+  "nativescript": {
+    "platforms": {
+      "ios": "",
+      "android": "1.8.0"
+    }
+  },
   "dependencies": {
     "nativescript-permissions": "^1.2.2"
   },
