@@ -1,6 +1,6 @@
 # NativeScript Contacts Lite
 
-This nativescript-contacts-lite plugin provides pretty fast read-only access to the iOS and Android contact directory. By limiting the scope of the result set through the `desiredFields`, it is possible to obtain a JSON object containing the relevant data of the contact directory within a couple of hundred milliseconds.
+This nativescript-contacts-lite plugin provides pretty fast (but hey it's all relative) read-only access to the iOS and Android contact directory. By limiting the scope of the result set through the `desiredFields`, it is possible to obtain a JSON object containing the relevant data of the contact directory within a couple of hundred milliseconds.
 
 # Installation
 
@@ -38,7 +38,7 @@ An array containing the desired fields to fetch from phone's storage backend. Po
 ```
 
 **Argument 2: searchTerm (optional)**
-A string with a search term to limit the result set to only contact whose `display_name` contain the term. Defaults to fetching all relevant contacts if an empty search term is provided or none at all.
+A string with a search term to limit the result set to only contacts whose `display_name` contain the term. Defaults to fetching all relevant contacts if an empty search term is provided or none at all.
 
 **Argument 3: debug (optional)**
 Boolean (true/false) determining whether to pass debug messages to the console. Defaults to false.
@@ -78,7 +78,7 @@ Contacts.getContactsWorker(desiredFields).then((result) => {
 Get contact details for a specific contact.
 
 **Argument 1: contactId**
-The identifier of the contact you wish to obtain details of.
+The identifier of the contact you wish to obtain details of (obtained through the getContacts(Worker) methods).
 
 **Argument 2: desiredFields**
 An array containing the desired fields to fetch from phone's storage backend. See `getContacts` method for possible values.
@@ -86,7 +86,7 @@ An array containing the desired fields to fetch from phone's storage backend. Se
 **Argument 3: debug (optional)**
 Boolean (true/false) determining whether to pass debug messages to the console. Defaults to false.
 
-**Example using getContactsWorker**
+**Example**
 ```js
 let contact_id = contact.contact_id // get id from result of getContacts method
 
@@ -112,7 +112,7 @@ Contacts.getContactById(contact_id,desiredFields).then((result) => {
 
 # Performance
 
-## Speed Considerations
+## Considerations
 
 ### Running in main thread versus web worker
 The plugin provides both methods that run in either the main/UI thread or within a web worker. Although offloading the processing to a separate thread adds web worker initialization time, it guarantees that the main UI thread will continue to work smoothly. 
@@ -129,7 +129,7 @@ Another way to speed up performance is possible in certain cases like when you a
 On a relatively old Samsung Galaxy S4 a list of ~600 contacts is returned somewhere between ~300ms up to ~2s depending on the desired fields and whether you run in the main thread or in a web worker.
 
 ### iOS
-On the iOS simulator with >1000 contacts it returns in up to ~600ms. This could use some real iOS device data if anyone has some.
+Testing on an iPhone 5s with ~600 contacts returned in ~105ms when running `getContacts(['display_name', 'phone'])` (so non worker). This could use some more real iOS device data in different modes (e.g. more fields & web worker mode) if anyone has some.
 
 
 # Notes

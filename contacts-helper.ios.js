@@ -31,7 +31,7 @@ exports.convertNativeCursorToContact = (c,fields) => {
   /* display_name */
 
   if (fields.indexOf("display_name") > -1) {
-    contact.display_name = `${getiOSValue("givenName", c)} ${getiOSValue("familyName", c)}`;
+    contact.display_name = `${getiOSValue("givenName", c).trim()} ${getiOSValue("familyName", c).trim()}`.trim();
   }
 
   /* name_details */
