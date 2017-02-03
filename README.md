@@ -129,7 +129,7 @@ Another way to speed up performance is possible in certain cases like when you a
 On a relatively old Samsung Galaxy S4 a list of ~600 contacts is returned somewhere between ~300ms up to ~2s depending on the desired fields and whether you run in the main thread or in a web worker.
 
 ### iOS
-Testing on an iPhone 5s with ~600 contacts returned in ~105ms when running `getContacts(['display_name', 'phone'])` (so non worker). This could use some more real iOS device data in different modes (e.g. more fields & web worker mode) if anyone has some.
+Tests on an iPhone 7 plus with ~600 contacts returned in ~105ms when running `getContacts(['display_name', 'phone'])` (so non worker). This could use some more real iOS device data in different modes (e.g. more fields & web worker mode) if anyone has some.
 
 
 # Notes
@@ -144,6 +144,15 @@ This plugin uses the [nativescript-permissions](https://github.com/NathanaelA/na
 
 ## iOS Specifics
 Since the plugin uses the Contact framework it is supported only on iOS 9.0 and above!
+
+### Permissions
+As of iOS 10 it has become mandatory to add the `NSContactsUsageDescription` key to your application's `Info.plist` (see [Apple's developer documentation](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW14)).
+
+Therefore you should add something like this to your `~/app/App_Resources/iOS/Info.plist`:
+```
+<key>NSContactsUsageDescription</key>
+<string>This application requires access to your contacts to function properly.</string>
+```
 
 # Acknowledgements
 The iOS part of this plugin is based on the [nativescript-contacts](https://github.com/firescript/nativescript-contacts) plugin.

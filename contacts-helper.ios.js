@@ -2,7 +2,7 @@ var constants = require("./constants");
 var imageSource = require("image-source");
 
 /* 
-   permissions handling is reall only relevant for Android, for iOS we will always resolve
+   permissions handling is only relevant for Android, always resolve on iOS
 */
 exports.handlePermission = (() => {
   return new Promise((resolve, reject) => {
@@ -15,14 +15,11 @@ let getiOSValue = function(key, contactData){
 };
 
 /*
-   Takes a native cursor row and converts to json object for new contacts
-   If contact already exists then merge relevant properties with the existing object
+   Takes a native iOS contact row and converts to json object for new contact
 
    Arguments
-    1: cursor - the cursor returned by Android's getContentResolver().query()
+    1: contact - the cursor returned by iOS' data store
     2: fields - those the user is interested in (skip irrelevant properties for speedup)
-    3: columnNames - since we already have those, no need to check them for every iteration
-    4: existingContact - either undefined or object for an existing record
 */
 exports.convertNativeCursorToContact = (c,fields) => {
   let contact = {}; // contact object to return if creatng a new record

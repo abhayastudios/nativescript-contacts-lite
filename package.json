@@ -1,6 +1,6 @@
 {
   "name": "nativescript-contacts-lite",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "NativeScript plugin providing pretty fast read-only access to the iOS and Android contact directory",
   "main": "index.js",
   "repository": {
@@ -17,12 +17,6 @@
     "name": "Jonathan Salomon",
     "email": "mail2joni@gmail.com"
   },
-  "contributors": [
-    {
-      "name": "Nathanael Anderson",
-      "url": "https://github.com/NathanaelA"
-    }
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/abhayastudios/nativescript-contacts-lite/issues"
@@ -30,8 +24,8 @@
   "homepage": "https://github.com/abhayastudios/nativescript-contacts-lite",
   "nativescript": {
     "platforms": {
-      "ios": "",
-      "android": "1.8.0"
+      "ios": "2.4.0",
+      "android": "2.4.0"
     }
   },
   "dependencies": {
