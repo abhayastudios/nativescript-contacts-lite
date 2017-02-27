@@ -4,7 +4,16 @@ let helper = require("./contacts-helper");
 exports.getContactsWorker = (fields,searchTerm=undefined,debug=false) => {
   return new Promise((resolve, reject) => {
     helper.handlePermission().then(() => {
-      let worker = new Worker('./get-contacts-worker.js'); // relative for caller script path
+
+      let worker = {};
+
+      if (global.TNS_WEBPACK) {
+        let Worker = require("worker-loader!./get-contacts-worker.js");
+        worker = new Worker;
+      } else {
+        worker = new Worker('./get-contacts-worker.js'); // relative for caller script path
+      }
+
       worker.postMessage({
         "searchTerm": (searchTerm==='') ? undefined : searchTerm,
         "fields": fields,

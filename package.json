@@ -1,6 +1,6 @@
 {
   "name": "nativescript-contacts-lite",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "NativeScript plugin providing pretty fast read-only access to the iOS and Android contact directory",
   "main": "index.js",
   "repository": {
@@ -32,5 +32,7 @@
     "nativescript-permissions": "^1.2.2"
   },
   "devDependencies": {
+    "worker-loader": "git+https://github.com/triniwiz/worker-loader.git#54cf4652b9c959e98886827921b7fa02578c4458",
+    "webpack" : "2.2.0"
   }
 }
