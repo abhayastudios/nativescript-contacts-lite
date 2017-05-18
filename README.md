@@ -158,4 +158,4 @@ Therefore you should add something like this to your `~/app/App_Resources/iOS/In
 ```
 
 # Acknowledgements
-The iOS part of this plugin is based on the [nativescript-contacts](https://github.com/firescript/nativescript-contacts) plugin.
+The iOS part of this plugin is based on code from the [nativescript-contacts](https://github.com/firescript/nativescript-contacts) plugin.

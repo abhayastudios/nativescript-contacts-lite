@@ -1,6 +1,6 @@
 {
   "name": "nativescript-contacts-lite",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "NativeScript plugin providing pretty fast read-only access to the iOS and Android contact directory",
   "main": "index.js",
   "repository": {
@@ -26,6 +26,13 @@
     "platforms": {
       "ios": "2.4.0",
       "android": "2.4.0"
+    },
+    "plugin": {
+       "nan": "true",
+       "pan": "true",
+       "core3": "true",
+       "wrapper": false,
+       "category": "Processing"
     }
   },
   "dependencies": {
