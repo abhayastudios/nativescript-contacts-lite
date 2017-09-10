@@ -8,7 +8,7 @@ exports.getContactsWorker = (fields,searchTerm=undefined,debug=false) => {
       let worker = {};
 
       if (global.TNS_WEBPACK) {
-        let Worker = require("worker-loader!./get-contacts-worker.js");
+        let Worker = require("nativescript-worker-loader!./get-contacts-worker.js");
         worker = new Worker;
       } else {
         worker = new Worker('./get-contacts-worker.js'); // relative for caller script path

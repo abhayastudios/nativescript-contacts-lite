@@ -135,7 +135,7 @@ Tests on an iPhone 7 plus with ~600 contacts returned in ~105ms when running `ge
 # Notes
 
 ## Bundling with Webpack
-This plugin should work out of the box with the [nativescript-dev-webpack](https://github.com/NativeScript/nativescript-dev-webpack) plugin. However, if you are using the web worker functions, we need to ensure that the web worker resources are included in the package. For this purpose, you should add the [worker-loader](https://github.com/triniwiz/worker-loader.git) plugin modified by Osei Fortune (aka Triniwiz) so it works with NativeScript to your project: `npm install https://github.com/triniwiz/worker-loader.git --save`.
+This plugin is compatible with webpack bundling through the [nativescript-dev-webpack](https://github.com/NativeScript/nativescript-dev-webpack) plugin as of NativeScript 3.2. However, if you are using the web worker functions, we need to ensure that the web worker resources are included in the package. For this purpose, you should add the [nativescript-worker-loader](https://github.com/NativeScript/worker-loader) to your project: `npm i -D nativescript-worker-loader`.
 
 ## Photo & Thumbnail Images
 The plugin returns `photo` & `thumbnail` images as a base64 encoded string ready to be used as the source attribute of an image, e.g. `<Image *ngIf="item.thumbnail" [src]="item.thumbnail"></Image>`
