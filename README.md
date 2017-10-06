@@ -55,8 +55,8 @@ let timer = new Date().getTime();
 Contacts.getContacts(desiredFields,searchTerm).then((result) => {
   console.log(`Loading contacts completed in ${(new Date().getTime() - timer)} ms.`);
   console.log(`Found ${result.length} contacts.`);
-  console.dump(result);
-}, (e) => { console.dump(e); });
+  console.dir(result);
+}, (e) => { console.dir(e); });
 ```
 
 **Example using getContactsWorker**
@@ -69,8 +69,8 @@ let timer = new Date().getTime();
 Contacts.getContactsWorker(desiredFields).then((result) => {
   console.log(`Loading contacts completed in ${(new Date().getTime() - timer)} ms.`);
   console.log(`Found ${result.length} contacts.`);
-  console.dump(result);
-}, (e) => { console.dump(e); });
+  console.dir(result);
+}, (e) => { console.dir(e); });
 ```
 
 
@@ -105,8 +105,8 @@ let desiredFields = [
 ]
 
 Contacts.getContactById(contact_id,desiredFields).then((result) => {
-  console.dump(result);
-}, (e) => { console.dump(e); });
+  console.dir(result);
+}, (e) => { console.dir(e); });
 ```
 
 

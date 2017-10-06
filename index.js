@@ -51,7 +51,9 @@ exports.getContacts = (fields,searchTerm=undefined,debug=false) => {
 
 exports.getContactById = (contactId,fields,debug=false) => {
   return new Promise((resolve, reject) => {
-    let result = contacts.getContactFromBackendById(contactId,fields,debug);
-    if (result.type=="error") { reject(result.message); } else { resolve(result.message); }
+    helper.handlePermission().then(() => {
+      let result = contacts.getContactFromBackendById(contactId,fields,debug);
+      if (result.type=="error") { reject(result.message); } else { resolve(result.message); }
+    }, (e) => { reject(e); }); // end of handlePermission
   }); // end of promise
 }
