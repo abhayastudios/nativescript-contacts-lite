@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ContactsProvider } from "./contacts-provider"
 
 @Component({
   selector: 'ContactsItem',
@@ -24,15 +23,9 @@ export class ContactsItemComponent implements OnInit {
   @Input() index:number = undefined;
   @Output() tap = new EventEmitter();
 
-  constructor(public contacts:ContactsProvider) {}
+  constructor() {}
 
   public ngOnInit() {
-  }
-
-  /* display header only when seeing character for first time */
-  public displayHeader(char,index) {
-    if (index===0) { return true; }
-    if (char==this.contacts.cachedContacts[index-1].name.charAt(0)) { return false; } else { return true; }
   }
 
   public onItemTap(contact) {
