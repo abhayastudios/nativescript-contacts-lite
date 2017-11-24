@@ -2,6 +2,10 @@
 
 This nativescript-contacts-lite plugin provides pretty fast (but hey it's all relative) read-only access to the iOS and Android contact directory. By limiting the scope of the result set through the `desiredFields`, it is possible to obtain a JSON object containing the relevant data of the contact directory within a couple of hundred milliseconds.
 
+# Demo Application
+
+This repository contains a demo application in the `demo-angular` folder that uses this plugin to display a contact picker. The demo app can be a good starting point for your app and may be used for narrowing down issues whilst debugging. Just clone this repo and run `tns run <platform>` in the `demo-angular` folder.
+
 # Installation
 
 Run `tns plugin add nativescript-contacts-lite`
@@ -120,7 +124,7 @@ The plugin provides both methods that run in either the main/UI thread or within
 If you are implementing an autocomplete where on each key you are querying a smaller subset of the contacts, you will probably want to go with the non-worker variant to avoid web worker initialization time while the user is waiting. On the other hand, if you are reading the entire contact directory while initializing your app, you probably want this to happen in the background to avoid the UI getting stuck while processing. In the latter case you probably would want to use the web worker variant.
 
 ### Contact Picker Example
-Another way to speed up performance is possible in certain cases like when you are building a contact picker. In this case it is probably good enough to first provide a narrow array of desiredFields like `['display_name','thumbnail']` to `getContacts` to display the list. Only when the user selects a specific contact, you can obtain all details for a specific contact by supplying a wider array of desiredFields to `getContactById`.
+Another way to speed up performance is possible in certain cases like when you are building a contact picker. In this case it is probably good enough to first provide a narrow array of desiredFields like `['display_name','thumbnail']` to `getContacts` to display the list. Only when the user selects a specific contact, you can obtain all details for a specific contact by supplying a wider array of desiredFields to `getContactById`. This example has been implemented in the demo app located in this repository.
 
 
 ## Benchmarks
