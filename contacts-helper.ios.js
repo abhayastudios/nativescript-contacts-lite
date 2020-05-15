@@ -6,7 +6,27 @@ var imageSource = require("image-source");
 */
 exports.handlePermission = (() => {
   return new Promise((resolve, reject) => {
-    resolve();
+    const status = CNAuthorizationStatus[CNContactStore.authorizationStatusForEntityType(CNEntityType.Contacts)];
+
+    if (status==="CNAuthorizationStatusAuthorized") { resolve(); }
+    else if (status==="CNAuthorizationStatusNotDetermined") {
+      requestPermission()
+      .then(() => { resolve(); })
+      .catch((error) => { reject(error); });
+    } else {
+      reject(`Unable to obtain permission to read contacts: ${status}`);
+    }
+  });
+});
+
+let requestPermission = (() => {
+  return new Promise((resolve, reject) => {
+    const contactStore = CNContactStore.new();
+    contactStore.requestAccessForEntityTypeCompletionHandler(CNEntityType.Contacts, () => {
+      exports.handlePermission()
+      .then(() => { resolve(); })
+      .catch((error) => { reject(error); });
+    });
   });
 });
 

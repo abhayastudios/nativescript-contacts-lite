@@ -1,0 +1,27 @@
+.list-item {
+  margin: 1 0 0 0;
+  padding: 5;
+  background-color: #f6f6f6;
+}
+
+.thumbnail {
+  width: 50;
+  height: 50;
+  border-radius: 25;
+  vertical-align: center;
+  text-align: center;
+}
+
+.thumbnail-awesome {
+  font-size: 50;
+  color: #b7b7b7;
+  vertical-align: center;
+  text-align: center;
+}
+
+.contact-name {
+  font-size: 18;
+  color: black;
+  margin-left: 5;
+  vertical-align: center;
+}
