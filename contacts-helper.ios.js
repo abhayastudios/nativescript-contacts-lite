@@ -1,5 +1,5 @@
 var constants = require("./constants");
-var imageSource = require("image-source");
+var imageSource = require("@nativescript/core/image-source");
 
 /* 
    permissions handling is only relevant for Android, always resolve on iOS

@@ -1,6 +1,6 @@
 var constants = require("./constants");
 var Perms = require("nativescript-permissions");
-var imageSource = require("image-source");
+var imageSource = require("@nativescript/core/image-source");
 
 exports.handlePermission = (() => {
   return new Promise((resolve, reject) => {
